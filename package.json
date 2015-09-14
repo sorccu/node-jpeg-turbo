@@ -1,0 +1,6 @@
+{
+  "name": "jpeg-turbo",
+  "dependencies": {
+    "nan": "^2.0.9"
+  }
+}
