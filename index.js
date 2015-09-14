@@ -1,1 +1,1 @@
-module.exports = require('./build/Release/JpegTurbo.node')
+module.exports = require('bindings')('JpegTurbo.node')
