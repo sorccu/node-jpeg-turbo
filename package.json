@@ -1,5 +1,17 @@
 {
   "name": "jpeg-turbo",
+  "version": "0.1.0",
+  "description": "Limited libjpeg-turbo bindings for Node.js.",
+  "keywords": [
+    "jpeg",
+    "jpeg-turbo",
+    "libjpeg-turbo"
+  ],
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sorccu/node-jpeg-turbo.git"
+  },
   "dependencies": {
     "nan": "^2.0.9"
   }
