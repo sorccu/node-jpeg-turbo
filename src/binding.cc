@@ -18,12 +18,12 @@ NAN_METHOD(DecompressSync) {
 
   tjhandle dh = tjInitDecompress();
   if (dh == NULL) {
-    return Nan::ThrowError("Unable to create tjhandle");
+    return Nan::ThrowError(tjGetErrorStr());
   }
 
   err = tjDecompressHeader3(dh, srcData, length, &width, &height, &jpegSubsamp, &jpegColorspace);
   if (err != 0) {
-    return Nan::ThrowError("tjDecompressHeader3() failed");
+    return Nan::ThrowError(tjGetErrorStr());
   }
 
   v8::Local<v8::Object> dstObject = Nan::NewBuffer(width * height * 3).ToLocalChecked();
@@ -31,12 +31,12 @@ NAN_METHOD(DecompressSync) {
 
   err = tjDecompress2(dh, srcData, length, dstData, width, 0, height, TJPF_RGB, TJFLAG_FASTDCT);
   if (err != 0) {
-    return Nan::ThrowError("tjDecompress2() failed");
+    return Nan::ThrowError(tjGetErrorStr());
   }
 
   err = tjDestroy(dh);
   if (err != 0) {
-    return Nan::ThrowError("tjDestroy() failed");
+    return Nan::ThrowError(tjGetErrorStr());
   }
 
   info.GetReturnValue().Set(dstObject);
