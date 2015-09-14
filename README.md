@@ -28,6 +28,11 @@ Install from [NPM](https://www.npmjs.com/):
 npm install --save jpeg-turbo
 ```
 
+## Thanks
+
+* https://github.com/A2K/node-jpeg-turbo-scaler
+* https://github.com/mash/node-imagemagick-native
+
 ## License
 
 See [LICENSE](LICENSE).
