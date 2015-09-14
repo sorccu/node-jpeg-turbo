@@ -3,7 +3,7 @@
 
 NAN_METHOD(DecompressSync) {
   int err;
-  int width, height, jpegSubsamp, jpegColorspace;
+  int width, height, jpegSubsamp;
   unsigned char* srcData;
   unsigned char* dstData;
   size_t length;
@@ -21,7 +21,7 @@ NAN_METHOD(DecompressSync) {
     return Nan::ThrowError(tjGetErrorStr());
   }
 
-  err = tjDecompressHeader3(dh, srcData, length, &width, &height, &jpegSubsamp, &jpegColorspace);
+  err = tjDecompressHeader2(dh, srcData, length, &width, &height, &jpegSubsamp);
   if (err != 0) {
     return Nan::ThrowError(tjGetErrorStr());
   }
