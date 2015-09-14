@@ -46,7 +46,12 @@ NAN_METHOD(DecompressSync) {
     return Nan::ThrowError(tjGetErrorStr());
   }
 
-  info.GetReturnValue().Set(dstObject);
+  v8::Local<v8::Object> obj = Nan::New<v8::Object>();
+  obj->Set(Nan::New("data").ToLocalChecked(), dstObject);
+  obj->Set(Nan::New("width").ToLocalChecked(), Nan::New(width));
+  obj->Set(Nan::New("height").ToLocalChecked(), Nan::New(height));
+
+  info.GetReturnValue().Set(obj);
 }
 
 NAN_MODULE_INIT(InitAll) {
