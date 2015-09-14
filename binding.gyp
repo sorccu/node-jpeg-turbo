@@ -4,12 +4,23 @@
       "target_name": "JpegTurbo",
       "sources": ["src/binding.cc"],
       "include_dirs": [
-        "<!(node -e \"require('nan')\")",
-        "/usr/local/opt/jpeg-turbo/include"
+        "<!(node -e \"require('nan')\")"
       ],
-      "link_settings": {
-        "libraries": ["-L/usr/local/opt/jpeg-turbo/lib", "-lturbojpeg"]
-      }
+      "libraries": [
+        "-lturbojpeg"
+      ],
+      "conditions": [
+        ["OS=='mac'", {
+          "include_dirs": [
+            "/usr/local/opt/jpeg-turbo/include"
+          ],
+          "link_settings": {
+            "library_dirs": [
+              "/usr/local/opt/jpeg-turbo/lib"
+            ]
+          }
+        }]
+      ]
     }
   ]
 }
