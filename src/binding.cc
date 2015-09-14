@@ -1,9 +1,16 @@
 #include <nan.h>
 #include <turbojpeg.h>
 
+// Unfortunately Travis still uses Ubuntu 12.04, and their libjpeg-turbo is
+// super old (1.2.0). We still want to build there, but opt in to the new
+// flag when possible.
+#ifndef TJFLAG_FASTDCT
+#define TJFLAG_FASTDCT 0
+#endif
+
 NAN_METHOD(DecompressSync) {
   int err;
-  int width, height, jpegSubsamp, flags;
+  int width, height, jpegSubsamp;
   unsigned char* srcData;
   unsigned char* dstData;
   size_t length;
@@ -29,15 +36,7 @@ NAN_METHOD(DecompressSync) {
   v8::Local<v8::Object> dstObject = Nan::NewBuffer(width * height * 3).ToLocalChecked();
   dstData = (unsigned char*) node::Buffer::Data(dstObject);
 
-  // Unfortunately Travis still uses Ubuntu 12.04, and their libjpeg-turbo is
-  // super old (1.2.0). We still want to build there, but opt in to the new
-  // flag when possible.
-  flags = 0;
-#ifdef TJFLAG_FASTDCT
-  flags |= TJFLAG_FASTDCT;
-#endif
-
-  err = tjDecompress2(dh, srcData, length, dstData, width, 0, height, TJPF_RGB, flags);
+  err = tjDecompress2(dh, srcData, length, dstData, width, 0, height, TJPF_RGB, TJFLAG_FASTDCT);
   if (err != 0) {
     return Nan::ThrowError(tjGetErrorStr());
   }
