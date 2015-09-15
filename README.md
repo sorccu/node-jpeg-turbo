@@ -16,9 +16,15 @@ On Ubuntu 12.04, 14.04:
 apt-get install libjpeg-turbo8-dev
 ```
 
+On Debian:
+
+```bash
+apt-get install libturbojpeg1-dev
+```
+
 Others:
 
-Search your package manager for `libjpeg-turbo`, `turbojpeg` or similar. Make sure to install the `-dev` package if available. On Debian `libturbojpeg1-dev` might work.
+Search your package manager for `libjpeg-turbo`, `turbojpeg` or similar. Make sure to install the `-dev` package if available.
 
 ## Installation
 
