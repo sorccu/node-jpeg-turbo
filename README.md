@@ -28,6 +28,12 @@ apt-get install libjpeg-turbo8-dev
 apt-get install libturbojpeg1-dev
 ```
 
+**On Alpine Linux**
+
+```bash
+apk add libjpeg-turbo-dev
+```
+
 **Others**
 
 Search your package manager for `libjpeg-turbo`, `turbojpeg` or similar. Make sure to install the `-dev` package if available.
