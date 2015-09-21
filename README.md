@@ -18,13 +18,30 @@ Here's how to install `yasm`:
 brew install yasm
 ```
 
-**On Ubuntu 12.04, 14.04**
+**On Ubuntu 14.04**
 
 ```bash
 apt-get install yasm
 ```
 
-**Important!** Ubuntu 12.04 comes with GCC 4.6, which is too old to compile the module. More information is available [here](https://github.com/travis-ci/travis-ci/issues/1379).
+**On Ubuntu 12.04**
+
+```bash
+apt-get install yasm
+```
+
+**Important!** Ubuntu 12.04 comes with GCC 4.6, which is too old to compile the add-on (and most other modules since Node.js 4.0 was released). More information is available [here](https://github.com/travis-ci/travis-ci/issues/1379).
+
+If you really must use this module on Ubuntu 12.04, the following may work:
+
+```bash
+apt-get install python-software-properties
+add-apt-repository -y ppa:ubuntu-toolchain-r/test
+apt-get -y install g++-4.8
+export CXX=g++-4.8
+```
+
+Remember to export `CXX` when you `npm install`.
 
 **On Debian**
 
