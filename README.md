@@ -24,6 +24,8 @@ brew install yasm
 apt-get install yasm
 ```
 
+**Important!** Ubuntu 12.04 comes with GCC 4.6, which is too old to compile the module. More information is available [here](https://github.com/travis-ci/travis-ci/issues/1379).
+
 **On Debian**
 
 ```bash
