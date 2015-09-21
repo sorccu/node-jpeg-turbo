@@ -38,4 +38,4 @@ install:
 
 script:
   - COMMIT_MESSAGE=$(git show -s --format=%B $TRAVIS_COMMIT | tr -d '\n')
-  - if [[ ${COMMIT_MESSAGE} =~ "[publish binary]" ]]; then node-pre-gyp publish; fi
+  - if [[ ${COMMIT_MESSAGE} =~ "[publish binary]" || ! -z "$TRAVIS_TAG" ]]; then node-pre-gyp publish; fi
