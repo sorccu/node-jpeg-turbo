@@ -76,7 +76,7 @@ NAN_METHOD(DecompressSync) {
   v8::Local<v8::Object> dstObject =
     options->Get(Nan::New("out").ToLocalChecked()).As<v8::Object>();
 
-  if (!node::Buffer::HasInstance(dstObject)) {
+  if (!dstObject->IsUndefined() && !node::Buffer::HasInstance(dstObject)) {
     return Nan::ThrowError(Nan::TypeError("Invalid output buffer"));
   }
 
