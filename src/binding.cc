@@ -47,7 +47,9 @@ NAN_METHOD(DecompressSync) {
     return Nan::ThrowError(Nan::TypeError("Options must be an Object"));
   }
 
-  uint32_t format = options->Get(Nan::New("format").ToLocalChecked())->Uint32Value();
+  uint32_t format =
+    options->Get(Nan::New("format").ToLocalChecked())->Uint32Value();
+
   switch (format) {
   case FORMAT_GRAY:
     bpp = 1;
@@ -70,7 +72,9 @@ NAN_METHOD(DecompressSync) {
     return Nan::ThrowError(Nan::TypeError("Invalid output format"));
   }
 
-  v8::Local<v8::Object> dstObject = options->Get(Nan::New("out").ToLocalChecked()).As<v8::Object>();
+  v8::Local<v8::Object> dstObject =
+    options->Get(Nan::New("out").ToLocalChecked()).As<v8::Object>();
+
   if (!node::Buffer::HasInstance(dstObject)) {
     return Nan::ThrowError(Nan::TypeError("Invalid output buffer"));
   }
@@ -80,7 +84,9 @@ NAN_METHOD(DecompressSync) {
     return Nan::ThrowError(tjGetErrorStr());
   }
 
-  err = tjDecompressHeader2(dh, srcData, srcLength, &width, &height, &jpegSubsamp);
+  err = tjDecompressHeader2(
+    dh, srcData, srcLength, &width, &height, &jpegSubsamp);
+
   if (err != 0) {
     tjDestroy(dh);
     return Nan::ThrowError(tjGetErrorStr());
@@ -99,7 +105,9 @@ NAN_METHOD(DecompressSync) {
 
   dstData = (unsigned char*) node::Buffer::Data(dstObject);
 
-  err = tjDecompress2(dh, srcData, srcLength, dstData, width, 0, height, format, TJFLAG_FASTDCT);
+  err = tjDecompress2(
+    dh, srcData, srcLength, dstData, width, 0, height, format, TJFLAG_FASTDCT);
+
   if (err != 0) {
     tjDestroy(dh);
     return Nan::ThrowError(tjGetErrorStr());
