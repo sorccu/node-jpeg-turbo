@@ -8,7 +8,9 @@ Currently the focus is on decompressing images as quickly as possible.
 
 ## Requirements
 
-We use [NAN](https://github.com/nodejs/nan) to guarantee maximum v8 API compatibility, so in theory any [Node.js](https://nodejs.org/) or [io.js](https://iojs.org/) version should work fine.
+We use [NAN](https://github.com/nodejs/nan) to guarantee maximum v8 API compatibility, so in theory any [Node.js](https://nodejs.org/) or [io.js](https://iojs.org/) version should work fine. For maximum convenience we also use [node-pre-gyp](https://github.com/mapbox/node-pre-gyp) to publish prebuilt binaries for a few common platforms. For example, if you're on OS X and using the latest stable Node, you probably won't need to do a thing.
+
+### If you must build from source
 
 Due to massive linking pain on Ubuntu, we embed and build `libjpeg-turbo` directly with `node-gyp`. Unfortunately this adds an extra requirement, as the build process needs `yasm` to enable all optimizations.
 
@@ -74,6 +76,7 @@ npm install --save jpeg-turbo
 * https://github.com/A2K/node-jpeg-turbo-scaler
 * https://github.com/mash/node-imagemagick-native
 * https://github.com/google/skia/blob/master/gyp/libjpeg-turbo.gyp
+* https://github.com/openstf/android-libjpeg-turbo
 
 ## License
 
