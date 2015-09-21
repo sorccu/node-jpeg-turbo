@@ -5,4 +5,4 @@ node_js:
 addons:
   apt:
     packages:
-    - libjpeg-turbo8-dev
+    - yasm
