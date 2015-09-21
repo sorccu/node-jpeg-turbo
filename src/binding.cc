@@ -40,6 +40,7 @@ NAN_METHOD(DecompressSync) {
 
   v8::Local<v8::Object> options = info[1].As<v8::Object>();
   uint32_t format = options->Get(Nan::New("format").ToLocalChecked())->Uint32Value();
+  v8::Local<v8::Object> dstObject = options->Get(Nan::New("out").ToLocalChecked()).As<v8::Object>();
 
   switch (format) {
   case FORMAT_GRAY:
@@ -75,7 +76,16 @@ NAN_METHOD(DecompressSync) {
   }
 
   dstLength = width * height * bpp;
-  v8::Local<v8::Object> dstObject = Nan::NewBuffer(dstLength).ToLocalChecked();
+
+  if (!dstObject->IsUndefined()) {
+    if (node::Buffer::Length(dstObject) < dstLength) {
+      return Nan::ThrowError("Insufficient output buffer");
+    }
+  }
+  else {
+    dstObject = Nan::NewBuffer(dstLength).ToLocalChecked();
+  }
+
   dstData = (unsigned char*) node::Buffer::Data(dstObject);
 
   err = tjDecompress2(dh, srcData, srcLength, dstData, width, 0, height, format, TJFLAG_FASTDCT);
