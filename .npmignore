@@ -1,5 +1,6 @@
 /*.tgz
 /build/
+/deps/
 /node_modules/
 /npm-*
 /temp/
