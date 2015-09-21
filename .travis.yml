@@ -1,14 +1,35 @@
+language: cpp
+
+os:
+  - linux
+  - osx
+
 sudo: false
-language: node_js
-node_js:
-  - "0.12"
-  - "4"
-env:
-  - CXX=g++-4.8
+
 addons:
   apt:
     sources:
-    - ubuntu-toolchain-r-test
+      - ubuntu-toolchain-r-test
     packages:
-    - g++-4.8
-    - yasm
+      - g++-4.8
+      - yasm
+
+env:
+  matrix:
+    - NODE_VERSION=0.12
+    - NODE_VERSION=4
+
+before_install:
+  - rm -rf ~/.nvm && git clone --depth 1 https://github.com/creationix/nvm.git ~/.nvm
+  - source ~/.nvm/nvm.sh
+  - nvm install $NODE_VERSION
+  - node --version
+  - npm --version
+  - if [ "${TRAVIS_OS_NAME}" == "linux" ]; then export CXX=g++-4.8; fi
+  - if [ "${TRAVIS_OS_NAME}" == "osx" ]; then brew install yasm; fi
+
+install:
+  - npm install --build-from-source
+
+script:
+  - true
