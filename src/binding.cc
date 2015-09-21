@@ -35,13 +35,19 @@ NAN_METHOD(DecompressSync) {
   }
 
   v8::Local<v8::Object> srcObject = info[0].As<v8::Object>();
+  if (!node::Buffer::HasInstance(srcObject)) {
+    return Nan::ThrowError(Nan::TypeError("Invalid source buffer"));
+  }
+
   srcData = (unsigned char*) node::Buffer::Data(srcObject);
   srcLength = node::Buffer::Length(srcObject);
 
   v8::Local<v8::Object> options = info[1].As<v8::Object>();
-  uint32_t format = options->Get(Nan::New("format").ToLocalChecked())->Uint32Value();
-  v8::Local<v8::Object> dstObject = options->Get(Nan::New("out").ToLocalChecked()).As<v8::Object>();
+  if (!options->IsObject()) {
+    return Nan::ThrowError(Nan::TypeError("Options must be an Object"));
+  }
 
+  uint32_t format = options->Get(Nan::New("format").ToLocalChecked())->Uint32Value();
   switch (format) {
   case FORMAT_GRAY:
     bpp = 1;
@@ -62,6 +68,11 @@ NAN_METHOD(DecompressSync) {
     break;
   default:
     return Nan::ThrowError(Nan::TypeError("Invalid output format"));
+  }
+
+  v8::Local<v8::Object> dstObject = options->Get(Nan::New("out").ToLocalChecked()).As<v8::Object>();
+  if (!node::Buffer::HasInstance(dstObject)) {
+    return Nan::ThrowError(Nan::TypeError("Invalid output buffer"));
   }
 
   tjhandle dh = tjInitDecompress();
