@@ -18,4 +18,4 @@ NAN_MODULE_INIT(InitAll) {
 
 // There is no semi-colon after NODE_MODULE as it's not a function (see node.h).
 // see http://nodejs.org/api/addons.html
-NODE_MODULE(binding, InitAll)
+NODE_MODULE(jpegturbo, InitAll)
