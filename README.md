@@ -10,7 +10,7 @@ We use [NAN](https://github.com/nodejs/nan) to guarantee maximum v8 API compatib
 
 Due to massive linking pain on Ubuntu, we embed and build `libjpeg-turbo` directly with `node-gyp`. Unfortunately this adds an extra requirement, as the build process needs `yasm` to enable all optimizations.
 
-Here's how to install the `yasm`:
+Here's how to install `yasm`:
 
 **On OS X**
 
