@@ -30,6 +30,7 @@ NAN_METHOD(DecompressSync) {
 
   err = tjDecompressHeader2(dh, srcData, length, &width, &height, &jpegSubsamp);
   if (err != 0) {
+    tjDestroy(dh);
     return Nan::ThrowError(tjGetErrorStr());
   }
 
@@ -38,6 +39,7 @@ NAN_METHOD(DecompressSync) {
 
   err = tjDecompress2(dh, srcData, length, dstData, width, 0, height, TJPF_RGB, TJFLAG_FASTDCT);
   if (err != 0) {
+    tjDestroy(dh);
     return Nan::ThrowError(tjGetErrorStr());
   }
 
