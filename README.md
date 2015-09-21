@@ -6,37 +6,58 @@ Currently the focus is on decompressing images as quickly as possible.
 
 ## Requirements
 
-We use [NAN](https://github.com/nodejs/nan) to guarantee maximum v8 API compatibility, so in theory any [Node.js](https://nodejs.org/) or [io.js](https://iojs.org/) version should work fine, as long as the [libjpeg-turbo](http://libjpeg-turbo.virtualgl.org/) libraries and headers are installed.
+We use [NAN](https://github.com/nodejs/nan) to guarantee maximum v8 API compatibility, so in theory any [Node.js](https://nodejs.org/) or [io.js](https://iojs.org/) version should work fine.
 
-Here's how to install the libraries:
+Due to massive linking pain on Ubuntu, we embed and build `libjpeg-turbo` directly with `node-gyp`. Unfortunately this adds an extra requirement, as the build process needs `yasm` to enable all optimizations.
+
+Here's how to install `yasm`:
 
 **On OS X**
 
 ```bash
-brew install jpeg-turbo
+brew install yasm
 ```
 
-**On Ubuntu 12.04, 14.04**
+**On Ubuntu 14.04**
 
 ```bash
-apt-get install libjpeg-turbo8-dev
+apt-get install yasm
 ```
+
+**On Ubuntu 12.04**
+
+```bash
+apt-get install yasm
+```
+
+**Important!** Ubuntu 12.04 comes with GCC 4.6, which is too old to compile the add-on (and most other modules since Node.js 4.0 was released). More information is available [here](https://github.com/travis-ci/travis-ci/issues/1379).
+
+If you really must use this module on Ubuntu 12.04, the following may work:
+
+```bash
+apt-get install python-software-properties
+add-apt-repository -y ppa:ubuntu-toolchain-r/test
+apt-get -y install g++-4.8
+export CXX=g++-4.8
+```
+
+Remember to export `CXX` when you `npm install`.
 
 **On Debian**
 
 ```bash
-apt-get install libturbojpeg1-dev
+apt-get install yasm
 ```
 
 **On Alpine Linux**
 
 ```bash
-apk add libjpeg-turbo-dev
+apk add yasm
 ```
 
 **Others**
 
-Search your package manager for `libjpeg-turbo`, `turbojpeg` or similar. Make sure to install the `-dev` package if available.
+Search your package manager for `yasm`.
 
 ## Installation
 
@@ -50,6 +71,7 @@ npm install --save jpeg-turbo
 
 * https://github.com/A2K/node-jpeg-turbo-scaler
 * https://github.com/mash/node-imagemagick-native
+* https://github.com/google/skia/blob/master/gyp/libjpeg-turbo.gyp
 
 ## License
 

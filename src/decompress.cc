@@ -1,5 +1,4 @@
-#include <nan.h>
-#include <turbojpeg.h>
+#include "exports.h"
 
 // Unfortunately Travis still uses Ubuntu 12.04, and their libjpeg-turbo is
 // super old (1.2.0). We still want to build there, but opt in to the new
@@ -7,20 +6,6 @@
 #ifndef TJFLAG_FASTDCT
 #define TJFLAG_FASTDCT 0
 #endif
-
-enum {
-  FORMAT_RGB  = TJPF_RGB,
-  FORMAT_BGR  = TJPF_BGR,
-  FORMAT_RGBX = TJPF_RGBX,
-  FORMAT_BGRX = TJPF_BGRX,
-  FORMAT_XRGB = TJPF_XRGB,
-  FORMAT_XBGR = TJPF_XBGR,
-  FORMAT_GRAY = TJPF_GRAY,
-  FORMAT_RGBA = TJPF_RGBA,
-  FORMAT_BGRA = TJPF_BGRA,
-  FORMAT_ABGR = TJPF_ABGR,
-  FORMAT_ARGB = TJPF_ARGB,
-};
 
 NAN_METHOD(DecompressSync) {
   int err;
@@ -130,23 +115,3 @@ NAN_METHOD(DecompressSync) {
 
   info.GetReturnValue().Set(obj);
 }
-
-NAN_MODULE_INIT(InitAll) {
-  Nan::Set(target, Nan::New("decompressSync").ToLocalChecked(),
-    Nan::GetFunction(Nan::New<v8::FunctionTemplate>(DecompressSync)).ToLocalChecked());
-  Nan::Set(target, Nan::New("FORMAT_RGB").ToLocalChecked(), Nan::New(FORMAT_RGB));
-  Nan::Set(target, Nan::New("FORMAT_BGR").ToLocalChecked(), Nan::New(FORMAT_BGR));
-  Nan::Set(target, Nan::New("FORMAT_RGBX").ToLocalChecked(), Nan::New(FORMAT_RGBX));
-  Nan::Set(target, Nan::New("FORMAT_BGRX").ToLocalChecked(), Nan::New(FORMAT_BGRX));
-  Nan::Set(target, Nan::New("FORMAT_XRGB").ToLocalChecked(), Nan::New(FORMAT_XRGB));
-  Nan::Set(target, Nan::New("FORMAT_XBGR").ToLocalChecked(), Nan::New(FORMAT_XBGR));
-  Nan::Set(target, Nan::New("FORMAT_GRAY").ToLocalChecked(), Nan::New(FORMAT_GRAY));
-  Nan::Set(target, Nan::New("FORMAT_RGBA").ToLocalChecked(), Nan::New(FORMAT_RGBA));
-  Nan::Set(target, Nan::New("FORMAT_BGRA").ToLocalChecked(), Nan::New(FORMAT_BGRA));
-  Nan::Set(target, Nan::New("FORMAT_ABGR").ToLocalChecked(), Nan::New(FORMAT_ABGR));
-  Nan::Set(target, Nan::New("FORMAT_ARGB").ToLocalChecked(), Nan::New(FORMAT_ARGB));
-}
-
-// There is no semi-colon after NODE_MODULE as it's not a function (see node.h).
-// see http://nodejs.org/api/addons.html
-NODE_MODULE(JpegTurbo, InitAll)
