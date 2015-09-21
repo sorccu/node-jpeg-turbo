@@ -1,5 +1,7 @@
 # node-jpeg-turbo
 
+[![Build Status](https://travis-ci.org/sorccu/node-jpeg-turbo.svg?branch=master)](https://travis-ci.org/sorccu/node-jpeg-turbo) [![npm](https://img.shields.io/npm/v/jpeg-turbo.svg)]()
+
 **node-jpeg-turbo** provides minimal [libjpeg-turbo](http://libjpeg-turbo.virtualgl.org/) bindings for [Node.js](https://nodejs.org/). It is very, very fast compared to other alternatives, such as [node-imagemagick-native](https://github.com/mash/node-imagemagick-native) or [jpeg-js](https://github.com/eugeneware/jpeg-js).
 
 Currently the focus is on decompressing images as quickly as possible.
