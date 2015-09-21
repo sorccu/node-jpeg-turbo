@@ -29,6 +29,7 @@ NAN_METHOD(DecompressSync) {
   unsigned char* dstData;
   uint32_t srcLength, dstLength;
   uint32_t bpp;
+  const char* tjErr;
 
   if (info.Length() < 2) {
     return Nan::ThrowError(Nan::TypeError("Too few arguments"));
@@ -88,8 +89,9 @@ NAN_METHOD(DecompressSync) {
     dh, srcData, srcLength, &width, &height, &jpegSubsamp);
 
   if (err != 0) {
+    tjErr = tjGetErrorStr();
     tjDestroy(dh);
-    return Nan::ThrowError(tjGetErrorStr());
+    return Nan::ThrowError(tjErr);
   }
 
   dstLength = width * height * bpp;
@@ -109,8 +111,9 @@ NAN_METHOD(DecompressSync) {
     dh, srcData, srcLength, dstData, width, 0, height, format, TJFLAG_FASTDCT);
 
   if (err != 0) {
+    tjErr = tjGetErrorStr();
     tjDestroy(dh);
-    return Nan::ThrowError(tjGetErrorStr());
+    return Nan::ThrowError(tjErr);
   }
 
   err = tjDestroy(dh);
