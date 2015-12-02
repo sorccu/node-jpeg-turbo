@@ -125,6 +125,11 @@
         'STDC_HEADERS=1',
         'WITH_SIMD=1',
       ],
+      'variables': {
+        'yasm_path%': 'yasm',
+        'yasm_format%': '-felf',
+        'yasm_flags%': [],
+      },
       'conditions': [
         [ 'target_arch == "x64"', {
           'defines': [
@@ -196,7 +201,7 @@
             'libjpeg-turbo/simd/jquanti-sse2.asm',
           ]
         }],
-        [ 'target_arch == "armv7"', {
+        [ 'target_arch == "arm"', {
           'defines': [
             'SIZEOF_SIZE_T=4',
           ],
