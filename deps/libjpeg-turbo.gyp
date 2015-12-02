@@ -157,7 +157,7 @@
             'libjpeg-turbo/simd/jquanti-sse2-64.asm',
           ],
         }],
-        [ 'target_arch == "x86"', {
+        [ 'target_arch == "ia32"', {
           'defines': [
             'SIZEOF_SIZE_T=4',
           ],
@@ -226,7 +226,7 @@
           'variables': {
             'yasm_path': 'yasm',
             'conditions': [
-              [ 'target_arch == "x86"', {
+              [ 'target_arch == "ia32"', {
                 'yasm_format': '-fmacho',
                 'yasm_flags': [
                   '-D__x86__',
@@ -249,7 +249,7 @@
           'variables': {
             'yasm_path': 'yasm',
             'conditions': [
-              [ 'target_arch == "x86"', {
+              [ 'target_arch == "ia32"', {
                 'yasm_format': '-felf',
                 'yasm_flags': [
                   '-D__x86__',
