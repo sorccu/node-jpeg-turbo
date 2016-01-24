@@ -1,41 +1,53 @@
 #include "exports.h"
 
-// Unfortunately Travis still uses Ubuntu 12.04, and their libjpeg-turbo is
-// super old (1.2.0). We still want to build there, but opt in to the new
-// flag when possible.
-#ifndef TJFLAG_FASTDCT
-#define TJFLAG_FASTDCT 0
-#endif
-
 NAN_METHOD(DecompressSync) {
   int err;
-  int width, height, jpegSubsamp;
-  unsigned char* srcData;
-  unsigned char* dstData;
-  uint32_t srcLength, dstLength;
-  uint32_t bpp;
   const char* tjErr;
 
   if (info.Length() < 2) {
     return Nan::ThrowError(Nan::TypeError("Too few arguments"));
   }
 
-  v8::Local<v8::Object> srcObject = info[0].As<v8::Object>();
+  int cursor = 0;
+
+  // Input buffer
+  v8::Local<v8::Object> srcObject = info[cursor++].As<v8::Object>();
   if (!node::Buffer::HasInstance(srcObject)) {
     return Nan::ThrowError(Nan::TypeError("Invalid source buffer"));
   }
 
-  srcData = (unsigned char*) node::Buffer::Data(srcObject);
-  srcLength = node::Buffer::Length(srcObject);
+  unsigned char* srcData = (unsigned char*) node::Buffer::Data(srcObject);
+  uint32_t srcLength = node::Buffer::Length(srcObject);
 
-  v8::Local<v8::Object> options = info[1].As<v8::Object>();
+  // Output buffer
+  v8::Local<v8::Object> dstObject;
+  bool havePreallocatedBuffer = false;
+
+  // Options
+  v8::Local<v8::Object> options = info[cursor++].As<v8::Object>();
+
+  if (node::Buffer::HasInstance(options) && info.Length() > cursor) {
+    dstObject = options;
+    options = info[cursor++].As<v8::Object>();
+    havePreallocatedBuffer = true;
+  }
+
   if (!options->IsObject()) {
     return Nan::ThrowError(Nan::TypeError("Options must be an Object"));
   }
 
-  uint32_t format =
-    options->Get(Nan::New("format").ToLocalChecked())->Uint32Value();
+  // Format of output buffer
+  v8::Local<v8::Value> formatObject =
+    options->Get(Nan::New("format").ToLocalChecked());
 
+  if (formatObject->IsUndefined()) {
+    return Nan::ThrowError(Nan::TypeError("Missing format"));
+  }
+
+  uint32_t format = formatObject->Uint32Value();
+
+  // Figure out bpp from format (needed to calculate output buffer size)
+  uint32_t bpp;
   switch (format) {
   case FORMAT_GRAY:
     bpp = 1;
@@ -58,30 +70,38 @@ NAN_METHOD(DecompressSync) {
     return Nan::ThrowError(Nan::TypeError("Invalid output format"));
   }
 
-  v8::Local<v8::Object> dstObject =
-    options->Get(Nan::New("out").ToLocalChecked()).As<v8::Object>();
+  // Output buffer option (deprecated)
+  v8::Local<v8::Object> outObject;
 
-  if (!dstObject->IsUndefined() && !node::Buffer::HasInstance(dstObject)) {
-    return Nan::ThrowError(Nan::TypeError("Invalid output buffer"));
+  if (!havePreallocatedBuffer) {
+    v8::Local<v8::Object> outObject =
+      options->Get(Nan::New("out").ToLocalChecked()).As<v8::Object>();
+
+    if (!outObject->IsUndefined() && node::Buffer::HasInstance(outObject)) {
+      dstObject = outObject;
+      havePreallocatedBuffer = true;
+    }
   }
 
-  tjhandle dh = tjInitDecompress();
-  if (dh == NULL) {
+  tjhandle handle = tjInitDecompress();
+  if (handle == NULL) {
     return Nan::ThrowError(tjGetErrorStr());
   }
 
+  int width, height, jpegSubsamp;
+
   err = tjDecompressHeader2(
-    dh, srcData, srcLength, &width, &height, &jpegSubsamp);
+    handle, srcData, srcLength, &width, &height, &jpegSubsamp);
 
   if (err != 0) {
     tjErr = tjGetErrorStr();
-    tjDestroy(dh);
+    tjDestroy(handle);
     return Nan::ThrowError(tjErr);
   }
 
-  dstLength = width * height * bpp;
+  uint32_t dstLength = width * height * bpp;
 
-  if (!dstObject->IsUndefined()) {
+  if (havePreallocatedBuffer) {
     if (node::Buffer::Length(dstObject) < dstLength) {
       return Nan::ThrowError("Insufficient output buffer");
     }
@@ -90,18 +110,18 @@ NAN_METHOD(DecompressSync) {
     dstObject = Nan::NewBuffer(dstLength).ToLocalChecked();
   }
 
-  dstData = (unsigned char*) node::Buffer::Data(dstObject);
+  unsigned char* dstData = (unsigned char*) node::Buffer::Data(dstObject);
 
   err = tjDecompress2(
-    dh, srcData, srcLength, dstData, width, 0, height, format, TJFLAG_FASTDCT);
+    handle, srcData, srcLength, dstData, width, 0, height, format, TJFLAG_FASTDCT);
 
   if (err != 0) {
     tjErr = tjGetErrorStr();
-    tjDestroy(dh);
+    tjDestroy(handle);
     return Nan::ThrowError(tjErr);
   }
 
-  err = tjDestroy(dh);
+  err = tjDestroy(handle);
   if (err != 0) {
     return Nan::ThrowError(tjGetErrorStr());
   }
@@ -110,6 +130,7 @@ NAN_METHOD(DecompressSync) {
   obj->Set(Nan::New("data").ToLocalChecked(), dstObject);
   obj->Set(Nan::New("width").ToLocalChecked(), Nan::New(width));
   obj->Set(Nan::New("height").ToLocalChecked(), Nan::New(height));
+  obj->Set(Nan::New("subsampling").ToLocalChecked(), Nan::New(jpegSubsamp));
   obj->Set(Nan::New("size").ToLocalChecked(), Nan::New(dstLength));
   obj->Set(Nan::New("bpp").ToLocalChecked(), Nan::New(bpp));
 
