@@ -114,6 +114,7 @@ For efficiency reasons you may choose to encode into a preallocated `Buffer`. Wh
   - **width** Required. The width of the image.
   - **height** Required. The height of the image.
   - **subsampling** Optional. The subsampling method to use. Defaults to `jpg.SAMP_420`.
+  - **quality** Optional. The desired JPG quality. Defaults to 80.
 * **Returns** The encoded image as a `Buffer`. Note that the buffer may actually be a slice of the preallocated `Buffer`, if given. _**Be careful not to reuse the preallocated buffer before you've finished processing the encoded image, as it may corrupt the image.**_
 
 ```js
