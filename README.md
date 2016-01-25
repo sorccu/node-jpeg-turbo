@@ -12,6 +12,15 @@ We use [NAN](https://github.com/nodejs/nan) to guarantee maximum v8 API compatib
 
 ### If you must build from source
 
+First, if you're building from the repo, make sure to init and update submodules or you'll get confusing errors about missing targets when building. We include `libjpeg-turbo` as a submodule.
+
+```bash
+git submodule init
+git submodule update
+```
+
+(or just use `git clone --recursive` when cloning the repo)
+
 Due to massive linking pain on Ubuntu, we embed and build `libjpeg-turbo` directly with `node-gyp`. Unfortunately this adds an extra requirement, as the build process needs `yasm` to enable all optimizations. Note that this step is only required for `x86` and `x86_64` architectures. You don't need `yasm` if you're building on `arm`, for example.
 
 Here's how to install `yasm`:
