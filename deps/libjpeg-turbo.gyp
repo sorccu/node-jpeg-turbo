@@ -117,13 +117,14 @@
         'HAVE_UNISTD_H=1',
         'HAVE_UNSIGNED_CHAR=1',
         'HAVE_UNSIGNED_SHORT=1',
-        'INLINE=inline __attribute__((always_inline))',
         'JPEG_LIB_VERSION=62',
         'LIBJPEG_TURBO_VERSION="1.4.1"',
         'MEM_SRCDST_SUPPORTED=1',
         'NEED_SYS_TYPES_H=1',
         'STDC_HEADERS=1',
         'WITH_SIMD=1',
+        'VERSION="0.4.0"',
+        'PACKAGE_NAME="jpeg-turbo"'
       ],
       'variables': {
         'yasm_path%': 'yasm',
@@ -155,6 +156,7 @@
             'libjpeg-turbo/simd/jidctred-sse2-64.asm',
             'libjpeg-turbo/simd/jquantf-sse2-64.asm',
             'libjpeg-turbo/simd/jquanti-sse2-64.asm',
+            'libjpeg-turbo/simd/jchuff-sse2-64.asm'
           ],
         }],
         [ 'target_arch == "ia32"', {
@@ -199,6 +201,7 @@
             'libjpeg-turbo/simd/jidctred-sse2.asm',
             'libjpeg-turbo/simd/jquantf-sse2.asm',
             'libjpeg-turbo/simd/jquanti-sse2.asm',
+            'libjpeg-turbo/simd/jchuff-sse2.asm'
           ]
         }],
         [ 'target_arch == "arm"', {
@@ -268,6 +271,31 @@
             ],
           },
         }],
+        [ 'OS == "win"', {
+          'variables': {
+            'yasm_path': 'yasm.exe',
+            'conditions': [
+              [ 'target_arch == "x64"', {
+                'yasm_format': '-fwin64',
+                'yasm_flags': [
+                  '-D__x86_64__',
+                  '-DWIN64',
+                  '-DMSVC',
+                  '-I..\..\deps\include'
+                ]
+              },
+              {
+                'yasm_format': '-fwin32',
+                'yasm_flags': [
+                  '-D__x86__',
+                  '-DWIN32',
+                  '-DMSVC',
+                  '-I..\..\deps\include'
+                ]
+              }]
+            ]
+          }
+        }]
       ],
       'rules': [
         {

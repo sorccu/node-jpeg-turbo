@@ -9,7 +9,7 @@
         'src/exports.cc',
       ],
       'include_dirs': [
-        '<!(node -e \'require("nan")\')'
+        '<!(node -e "require(\'nan\')")'
       ],
       'dependencies': [
         'deps/libjpeg-turbo.gyp:jpeg-turbo'

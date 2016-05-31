@@ -68,6 +68,12 @@ apt-get install yasm
 apk add yasm
 ```
 
+**On Windows**
+
+Download Win32 or Win64 yasm from [here](http://yasm.tortall.net/Download.html) and make sure it's found in path as yasm.exe.
+
+When installing add --msvs_version=2015 to npm install command.
+
 **Others**
 
 Search your package manager for `yasm`.
