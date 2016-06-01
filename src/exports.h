@@ -38,6 +38,8 @@ enum {
 
 NAN_METHOD(BufferSize);
 NAN_METHOD(CompressSync);
+NAN_METHOD(Compress);
 NAN_METHOD(DecompressSync);
+NAN_METHOD(Decompress);
 
 #endif

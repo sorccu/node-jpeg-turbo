@@ -5,7 +5,9 @@
       'sources': [
         'src/buffersize.cc',
         'src/compress.cc',
+        'src/compressAsync.cc',
         'src/decompress.cc',
+        'src/decompressAsync.cc',
         'src/exports.cc',
       ],
       'include_dirs': [
