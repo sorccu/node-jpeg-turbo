@@ -11,6 +11,10 @@
 #define TJFLAG_FASTDCT 0
 #endif
 
+#ifdef DEFAULT_QUALITY
+#undef DEFAULT_QUALITY
+#endif
+
 static int DEFAULT_QUALITY = 80;
 static int DEFAULT_SUBSAMPLING = TJSAMP_420;
 
