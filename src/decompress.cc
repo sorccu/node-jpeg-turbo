@@ -1,10 +1,103 @@
 #include "exports.h"
 
-NAN_METHOD(DecompressSync) {
-  int err;
-  const char* tjErr;
+class DecompressWorker : public Nan::AsyncWorker {
+  public:
+    DecompressWorker(Nan::Callback *callback, unsigned char* srcData, uint32_t srcLength, uint32_t format, uint32_t bpp, v8::Local<v8::Object> &dstObject, unsigned char* dstData, uint32_t dstBufferLength)
+      : Nan::AsyncWorker(callback), srcData(srcData), srcLength(srcLength), format(format), bpp(bpp), dstData(dstData), dstBufferLength(dstBufferLength), width(0), height(0), jpegSubsamp(0), dstLength(0) {
+        if (dstBufferLength > 0) {
+          SaveToPersistent("dstObject", dstObject);
+        }
+      }
+    ~DecompressWorker() {}
 
-  if (info.Length() < 2) {
+    void Execute () {
+      int err;
+
+      tjhandle handle = tjInitDecompress();
+      if (handle == NULL) {
+        SetErrorMessage(tjGetErrorStr());
+        return;
+      }
+
+      err = tjDecompressHeader2(handle, this->srcData, this->srcLength, &this->width, &this->height, &this->jpegSubsamp);
+
+      if (err != 0) {
+        SetErrorMessage(tjGetErrorStr());
+        tjDestroy(handle);
+        return;
+      }
+
+      this->dstLength = this->width * this->height * this->bpp;
+
+      if (this->dstBufferLength > 0) {
+        if (this->dstBufferLength < this->dstLength) {
+          SetErrorMessage("Insufficient output buffer");
+          return;
+        }
+      }
+      else {
+        this->dstData = (unsigned char*)malloc(this->dstLength);
+      }
+
+      err = tjDecompress2(handle, this->srcData, this->srcLength, this->dstData, this->width, 0, this->height, this->format, TJFLAG_FASTDCT);
+
+      if(err != 0) {
+        SetErrorMessage(tjGetErrorStr());
+        tjDestroy(handle);
+        return;
+      }
+
+      err = tjDestroy(handle);
+      if (err != 0) {
+        SetErrorMessage(tjGetErrorStr());
+        return;
+      }
+    }
+
+    void HandleOKCallback () {
+      Nan::HandleScope scope;
+
+      v8::Local<v8::Object> obj = Nan::New<v8::Object>();
+
+      if (this->dstBufferLength > 0) {
+        v8::Local<v8::Object> dstObject = GetFromPersistent("dstObject").As<v8::Object>();
+        obj->Set(Nan::New("data").ToLocalChecked(), dstObject);
+      }
+      else {
+        v8::Local<v8::Object> dstObject = Nan::NewBuffer((char*)this->dstData, this->dstLength).ToLocalChecked();
+        obj->Set(Nan::New("data").ToLocalChecked(), dstObject);
+      }
+
+      obj->Set(Nan::New("width").ToLocalChecked(), Nan::New(this->width));
+      obj->Set(Nan::New("height").ToLocalChecked(), Nan::New(this->height));
+      obj->Set(Nan::New("subsampling").ToLocalChecked(), Nan::New(this->jpegSubsamp));
+      obj->Set(Nan::New("size").ToLocalChecked(), Nan::New(this->dstLength));
+      obj->Set(Nan::New("bpp").ToLocalChecked(), Nan::New(this->bpp));
+
+      v8::Local<v8::Value> argv[] = {
+        Nan::Null(),
+        obj
+      };
+
+      callback->Call(2, argv);
+    }
+
+  private:
+    unsigned char* srcData;
+    uint32_t srcLength;
+    uint32_t format;
+    uint32_t bpp;
+    unsigned char* dstData;
+    uint32_t dstBufferLength;
+
+    int width;
+    int height;
+    int jpegSubsamp;
+    uint32_t dstLength;
+};
+
+NAN_METHOD(Decompress) {
+  if (info.Length() < 3) {
     return Nan::ThrowError(Nan::TypeError("Too few arguments"));
   }
 
@@ -21,7 +114,8 @@ NAN_METHOD(DecompressSync) {
 
   // Output buffer
   v8::Local<v8::Object> dstObject;
-  bool havePreallocatedBuffer = false;
+  uint32_t dstBufferLength = 0;
+  unsigned char* dstData;
 
   // Options
   v8::Local<v8::Object> options = info[cursor++].As<v8::Object>();
@@ -29,16 +123,19 @@ NAN_METHOD(DecompressSync) {
   if (node::Buffer::HasInstance(options) && info.Length() > cursor) {
     dstObject = options;
     options = info[cursor++].As<v8::Object>();
-    havePreallocatedBuffer = true;
+    dstBufferLength = node::Buffer::Length(dstObject);
+    dstData = (unsigned char*) node::Buffer::Data(dstObject);
   }
 
   if (!options->IsObject()) {
     return Nan::ThrowError(Nan::TypeError("Options must be an Object"));
   }
 
+  // Callback
+  Nan::Callback *callback = new Nan::Callback(info[cursor++].As<v8::Function>());
+
   // Format of output buffer
-  v8::Local<v8::Value> formatObject =
-    options->Get(Nan::New("format").ToLocalChecked());
+  v8::Local<v8::Value> formatObject = options->Get(Nan::New("format").ToLocalChecked());
 
   if (formatObject->IsUndefined()) {
     return Nan::ThrowError(Nan::TypeError("Missing format"));
@@ -49,90 +146,26 @@ NAN_METHOD(DecompressSync) {
   // Figure out bpp from format (needed to calculate output buffer size)
   uint32_t bpp;
   switch (format) {
-  case FORMAT_GRAY:
-    bpp = 1;
-    break;
-  case FORMAT_RGB:
-  case FORMAT_BGR:
-    bpp = 3;
-    break;
-  case FORMAT_RGBX:
-  case FORMAT_BGRX:
-  case FORMAT_XRGB:
-  case FORMAT_XBGR:
-  case FORMAT_RGBA:
-  case FORMAT_BGRA:
-  case FORMAT_ABGR:
-  case FORMAT_ARGB:
-    bpp = 4;
-    break;
-  default:
-    return Nan::ThrowError(Nan::TypeError("Invalid output format"));
+    case FORMAT_GRAY:
+      bpp = 1;
+      break;
+    case FORMAT_RGB:
+    case FORMAT_BGR:
+      bpp = 3;
+      break;
+    case FORMAT_RGBX:
+    case FORMAT_BGRX:
+    case FORMAT_XRGB:
+    case FORMAT_XBGR:
+    case FORMAT_RGBA:
+    case FORMAT_BGRA:
+    case FORMAT_ABGR:
+    case FORMAT_ARGB:
+      bpp = 4;
+      break;
+    default:
+      return Nan::ThrowError(Nan::TypeError("Invalid output format"));
   }
 
-  // Output buffer option (deprecated)
-  v8::Local<v8::Object> outObject;
-
-  if (!havePreallocatedBuffer) {
-    v8::Local<v8::Object> outObject =
-      options->Get(Nan::New("out").ToLocalChecked()).As<v8::Object>();
-
-    if (!outObject->IsUndefined() && node::Buffer::HasInstance(outObject)) {
-      dstObject = outObject;
-      havePreallocatedBuffer = true;
-    }
-  }
-
-  tjhandle handle = tjInitDecompress();
-  if (handle == NULL) {
-    return Nan::ThrowError(tjGetErrorStr());
-  }
-
-  int width, height, jpegSubsamp;
-
-  err = tjDecompressHeader2(
-    handle, srcData, srcLength, &width, &height, &jpegSubsamp);
-
-  if (err != 0) {
-    tjErr = tjGetErrorStr();
-    tjDestroy(handle);
-    return Nan::ThrowError(tjErr);
-  }
-
-  uint32_t dstLength = width * height * bpp;
-
-  if (havePreallocatedBuffer) {
-    if (node::Buffer::Length(dstObject) < dstLength) {
-      return Nan::ThrowError("Insufficient output buffer");
-    }
-  }
-  else {
-    dstObject = Nan::NewBuffer(dstLength).ToLocalChecked();
-  }
-
-  unsigned char* dstData = (unsigned char*) node::Buffer::Data(dstObject);
-
-  err = tjDecompress2(
-    handle, srcData, srcLength, dstData, width, 0, height, format, TJFLAG_FASTDCT);
-
-  if (err != 0) {
-    tjErr = tjGetErrorStr();
-    tjDestroy(handle);
-    return Nan::ThrowError(tjErr);
-  }
-
-  err = tjDestroy(handle);
-  if (err != 0) {
-    return Nan::ThrowError(tjGetErrorStr());
-  }
-
-  v8::Local<v8::Object> obj = Nan::New<v8::Object>();
-  obj->Set(Nan::New("data").ToLocalChecked(), dstObject);
-  obj->Set(Nan::New("width").ToLocalChecked(), Nan::New(width));
-  obj->Set(Nan::New("height").ToLocalChecked(), Nan::New(height));
-  obj->Set(Nan::New("subsampling").ToLocalChecked(), Nan::New(jpegSubsamp));
-  obj->Set(Nan::New("size").ToLocalChecked(), Nan::New(dstLength));
-  obj->Set(Nan::New("bpp").ToLocalChecked(), Nan::New(bpp));
-
-  info.GetReturnValue().Set(obj);
+  Nan::AsyncQueueWorker(new DecompressWorker(callback, srcData, srcLength, format, bpp, dstObject, dstData, dstBufferLength));
 }
