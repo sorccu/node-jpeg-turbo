@@ -18,7 +18,7 @@ install:
   - if "%PLATFORM%" == "x64" npm config set python C:\Python27-x64\python.exe
   - if "%PLATFORM%" == "x86" npm config set python C:\Python27\python.exe
   - npm install -g node-gyp
-  - npm install --build-from-source --msvs_version=2015
+  - npm install --build-from-source --msvs_version=2015 --verbose
 matrix:
   fast_finish: true
 build: off
