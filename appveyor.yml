@@ -1,9 +1,8 @@
 platform:
-  - x64
   - x86
 environment:
   matrix:
-    - nodejs_version: '4.4.4'
+    - nodejs_version: '4'
 install:
   - ps: Install-Product node $env:nodejs_version $env:Platform
   - node --version && npm --version
@@ -18,7 +17,7 @@ install:
   - if "%PLATFORM%" == "x64" npm config set python C:\Python27-x64\python.exe
   - if "%PLATFORM%" == "x86" npm config set python C:\Python27\python.exe
   - npm install -g node-gyp
-  - npm install --build-from-source --msvs_version=2015 --verbose
+  - npm install --build-from-source --msvs_version=2015 --silly
 matrix:
   fast_finish: true
 build: off
