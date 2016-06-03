@@ -20,7 +20,7 @@ install:
   - git submodule update --init
   - if "%PLATFORM%" == "x64" npm config set python C:\Python27-x64\python.exe
   - if "%PLATFORM%" == "x86" npm config set python C:\Python27\python.exe
-  - npm install -g node-pre-gyp
+  - npm install -g node-gyp
   - if "%PLATFORM%" == "x64" node-gyp --python C:\Python27-x64\python.exe
   - if "%PLATFORM%" == "x86" node-gyp --python C:\Python27\python.exe
   - npm install --build-from-source --msvs_version=2015
