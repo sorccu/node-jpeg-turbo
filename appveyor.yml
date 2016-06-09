@@ -23,11 +23,11 @@ install:
   - git submodule update --init
   - if "%PLATFORM%" == "x64" npm config set python C:\Python27-x64\python.exe
   - if "%PLATFORM%" == "x86" npm config set python C:\Python27\python.exe
+  - if "%PLATFORM%" == "x86" if "%NODEJS_VERSION%" == "4" npm config set -g cafile=package.json
+  - if "%PLATFORM%" == "x86" if "%NODEJS_VERSION%" == "4" npm config set -g strict-ssl=false
   - npm install -g node-gyp
   - npm install --build-from-source --msvs_version=2015
 matrix:
   fast_finish: true
-  allow_failures:
-    - nodejs_version: '4'
 build: off
 clone_depth: 1
