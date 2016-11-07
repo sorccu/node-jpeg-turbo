@@ -1,7 +1,10 @@
 {
   'targets': [
     {
-      'target_name': '<(module_name)',
+      'target_name': 'jpegturbo',
+      'dependencies': [
+        'deps/libjpeg-turbo.gyp:jpeg-turbo'
+      ],
       'sources': [
         'src/buffersize.cc',
         'src/compress.cc',
@@ -11,19 +14,12 @@
       'include_dirs': [
         '<!(node -e \'require("nan")\')'
       ],
-      'dependencies': [
-        'deps/libjpeg-turbo.gyp:jpeg-turbo'
-      ]
-    },
-    {
-      'target_name': 'action_after_build',
-      'type': 'none',
-      'dependencies': [ '<(module_name)' ],
-      'copies': [
-        {
-          'files': [ '<(PRODUCT_DIR)/<(module_name).node' ],
-          'destination': '<(module_path)'
-        }
+      'conditions': [
+        ['OS=="mac"', {
+          'xcode_settings': {
+            'MACOSX_DEPLOYMENT_TARGET': '10.9'
+          }
+        }]
       ]
     }
   ]
