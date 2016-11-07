@@ -117,13 +117,14 @@
         'HAVE_UNISTD_H=1',
         'HAVE_UNSIGNED_CHAR=1',
         'HAVE_UNSIGNED_SHORT=1',
-        'INLINE=inline __attribute__((always_inline))',
         'JPEG_LIB_VERSION=62',
-        'LIBJPEG_TURBO_VERSION="1.4.1"',
+        'LIBJPEG_TURBO_VERSION="1.4.2"',
         'MEM_SRCDST_SUPPORTED=1',
         'NEED_SYS_TYPES_H=1',
         'STDC_HEADERS=1',
         'WITH_SIMD=1',
+        'VERSION="0.4.0"',
+        'PACKAGE_NAME="jpeg-turbo"'
       ],
       'variables': {
         'yasm_path%': 'yasm',
@@ -140,13 +141,13 @@
           ],
           'sources': [
             'libjpeg-turbo/simd/jsimd_x86_64.c',
-            'libjpeg-turbo/simd/jfdctflt-sse-64.asm',
             'libjpeg-turbo/simd/jccolor-sse2-64.asm',
             'libjpeg-turbo/simd/jcgray-sse2-64.asm',
             'libjpeg-turbo/simd/jcsample-sse2-64.asm',
             'libjpeg-turbo/simd/jdcolor-sse2-64.asm',
             'libjpeg-turbo/simd/jdmerge-sse2-64.asm',
             'libjpeg-turbo/simd/jdsample-sse2-64.asm',
+            'libjpeg-turbo/simd/jfdctflt-sse-64.asm',
             'libjpeg-turbo/simd/jfdctfst-sse2-64.asm',
             'libjpeg-turbo/simd/jfdctint-sse2-64.asm',
             'libjpeg-turbo/simd/jidctflt-sse2-64.asm',
@@ -154,7 +155,7 @@
             'libjpeg-turbo/simd/jidctint-sse2-64.asm',
             'libjpeg-turbo/simd/jidctred-sse2-64.asm',
             'libjpeg-turbo/simd/jquantf-sse2-64.asm',
-            'libjpeg-turbo/simd/jquanti-sse2-64.asm',
+            'libjpeg-turbo/simd/jquanti-sse2-64.asm'
           ],
         }],
         [ 'target_arch == "ia32"', {
@@ -166,39 +167,39 @@
           ],
           'sources': [
             'libjpeg-turbo/simd/jsimd_i386.c',
-            'libjpeg-turbo/simd/jsimdcpu.asm',
-            'libjpeg-turbo/simd/jfdctflt-3dn.asm',
-            'libjpeg-turbo/simd/jidctflt-3dn.asm',
-            'libjpeg-turbo/simd/jquant-3dn.asm',
             'libjpeg-turbo/simd/jccolor-mmx.asm',
-            'libjpeg-turbo/simd/jcgray-mmx.asm',
-            'libjpeg-turbo/simd/jcsample-mmx.asm',
-            'libjpeg-turbo/simd/jdcolor-mmx.asm',
-            'libjpeg-turbo/simd/jdmerge-mmx.asm',
-            'libjpeg-turbo/simd/jdsample-mmx.asm',
-            'libjpeg-turbo/simd/jfdctfst-mmx.asm',
-            'libjpeg-turbo/simd/jfdctint-mmx.asm',
-            'libjpeg-turbo/simd/jidctfst-mmx.asm',
-            'libjpeg-turbo/simd/jidctint-mmx.asm',
-            'libjpeg-turbo/simd/jidctred-mmx.asm',
-            'libjpeg-turbo/simd/jquant-mmx.asm',
-            'libjpeg-turbo/simd/jfdctflt-sse.asm',
-            'libjpeg-turbo/simd/jidctflt-sse.asm',
-            'libjpeg-turbo/simd/jquant-sse.asm',
             'libjpeg-turbo/simd/jccolor-sse2.asm',
+            'libjpeg-turbo/simd/jcgray-mmx.asm',
             'libjpeg-turbo/simd/jcgray-sse2.asm',
+            'libjpeg-turbo/simd/jcsample-mmx.asm',
             'libjpeg-turbo/simd/jcsample-sse2.asm',
+            'libjpeg-turbo/simd/jdcolor-mmx.asm',
             'libjpeg-turbo/simd/jdcolor-sse2.asm',
+            'libjpeg-turbo/simd/jdmerge-mmx.asm',
             'libjpeg-turbo/simd/jdmerge-sse2.asm',
+            'libjpeg-turbo/simd/jdsample-mmx.asm',
             'libjpeg-turbo/simd/jdsample-sse2.asm',
+            'libjpeg-turbo/simd/jfdctflt-3dn.asm',
+            'libjpeg-turbo/simd/jfdctflt-sse.asm',
+            'libjpeg-turbo/simd/jfdctfst-mmx.asm',
             'libjpeg-turbo/simd/jfdctfst-sse2.asm',
+            'libjpeg-turbo/simd/jfdctint-mmx.asm',
             'libjpeg-turbo/simd/jfdctint-sse2.asm',
+            'libjpeg-turbo/simd/jidctflt-3dn.asm',
+            'libjpeg-turbo/simd/jidctflt-sse.asm',
             'libjpeg-turbo/simd/jidctflt-sse2.asm',
+            'libjpeg-turbo/simd/jidctfst-mmx.asm',
             'libjpeg-turbo/simd/jidctfst-sse2.asm',
+            'libjpeg-turbo/simd/jidctint-mmx.asm',
             'libjpeg-turbo/simd/jidctint-sse2.asm',
+            'libjpeg-turbo/simd/jidctred-mmx.asm',
             'libjpeg-turbo/simd/jidctred-sse2.asm',
+            'libjpeg-turbo/simd/jquant-3dn.asm',
+            'libjpeg-turbo/simd/jquant-mmx.asm',
+            'libjpeg-turbo/simd/jquant-sse.asm',
             'libjpeg-turbo/simd/jquantf-sse2.asm',
             'libjpeg-turbo/simd/jquanti-sse2.asm',
+            'libjpeg-turbo/simd/jsimdcpu.asm',
           ]
         }],
         [ 'target_arch == "arm"', {
@@ -268,6 +269,31 @@
             ],
           },
         }],
+        [ 'OS == "win"', {
+          'variables': {
+            'yasm_path': 'yasm.exe',
+            'conditions': [
+              [ 'target_arch == "x64"', {
+                'yasm_format': '-fwin64',
+                'yasm_flags': [
+                  '-D__x86_64__',
+                  '-DWIN64',
+                  '-DMSVC',
+                  '-I..\..\deps\include'
+                ]
+              },
+              {
+                'yasm_format': '-fwin32',
+                'yasm_flags': [
+                  '-D__x86__',
+                  '-DWIN32',
+                  '-DMSVC',
+                  '-I..\..\deps\include'
+                ]
+              }]
+            ]
+          }
+        }]
       ],
       'rules': [
         {

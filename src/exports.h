@@ -11,8 +11,11 @@
 #define TJFLAG_FASTDCT 0
 #endif
 
-static int DEFAULT_QUALITY = 80;
-static int DEFAULT_SUBSAMPLING = TJSAMP_420;
+#define NJT_MSG_LENGTH_MAX 200
+
+static int NJT_DEFAULT_QUALITY = 80;
+static int NJT_DEFAULT_SUBSAMPLING = TJSAMP_420;
+static int NJT_DEFAULT_FORMAT = TJPF_RGBA;
 
 enum {
   FORMAT_RGB  = TJPF_RGB,
@@ -38,6 +41,8 @@ enum {
 
 NAN_METHOD(BufferSize);
 NAN_METHOD(CompressSync);
+NAN_METHOD(Compress);
 NAN_METHOD(DecompressSync);
+NAN_METHOD(Decompress);
 
 #endif

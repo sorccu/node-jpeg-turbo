@@ -12,7 +12,7 @@
         'src/exports.cc',
       ],
       'include_dirs': [
-        '<!(node -e \'require("nan")\')'
+        '<!(node -e "require(\'nan\')")'
       ],
       'conditions': [
         ['OS=="mac"', {

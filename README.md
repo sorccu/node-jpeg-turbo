@@ -70,6 +70,36 @@ apt-get install yasm
 apk add yasm
 ```
 
+**On Windows**
+
+Download Win32 or Win64 yasm from [here](http://yasm.tortall.net/Download.html) and make sure it's found in path as yasm.exe. Use the "for general use" version. If the .exe doesn't run, or complains about a missing `MSVCR100.dll`, go to [KB2977003](https://support.microsoft.com/en-us/kb/2977003) and find "Microsoft Visual C++ 2010 Service Pack 1 Redistributable Package MFC Security Update" under "Visual Studio 2010 (VC++ 10.0) SP1". The .exe should work fine after installing the redistributable.
+
+To verify your yasm setup, run:
+
+```sh
+yasm
+```
+
+This should give the output:
+
+> yasm: No input files specified
+
+Next, you need to make sure that you have a build environment set up. An easy way to do that is to use [windows-build-tools](https://github.com/felixrieseberg/windows-build-tools).
+
+Now, just to make sure things are set up properly, run:
+
+```
+npm config get msvs_version
+```
+
+If the output is `2015` or newer, you're good. If it's anything else, or not set, you must run:
+
+```
+npm config set -g msvs_version 2015
+```
+
+Alternatively, you can specify the option at install time with `--msvs_version=2015`.
+
 **Others**
 
 Search your package manager for `yasm`.
