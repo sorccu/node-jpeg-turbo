@@ -8,7 +8,9 @@ Please ask if you need more methods exposed.
 
 ## Requirements
 
-We use [NAN](https://github.com/nodejs/nan) to guarantee maximum v8 API compatibility, so in theory any [Node.js](https://nodejs.org/) or [io.js](https://iojs.org/) version should work fine. For maximum convenience we also use [node-pre-gyp](https://github.com/mapbox/node-pre-gyp) to publish prebuilt binaries for a few common platforms. For example, if you're on OS X and using the latest stable Node, you probably won't need to do a thing.
+Only the most recent version of Node still in [*active* Long-term Support](https://github.com/nodejs/LTS#lts-schedule) (currently v4) and greater are supported. Older versions may or may not work; they are not and will not be supported.
+
+We provide prebuilt bindings for some platforms using [prebuilt-bindings](https://github.com/sorccu/node-prebuilt-bindings), meaning that you should not have to compile native bindings from source very often. The bindings are hosted at and automatically installed from our [GitHub Releases](https://github.com/sorccu/node-jpeg-turbo).
 
 ### If you must build from source
 
@@ -74,9 +76,17 @@ Search your package manager for `yasm`.
 
 ## Installation
 
-Make sure you've got the [requirements](#requirements) installed. Then simply install from [NPM](https://www.npmjs.com/):
+Make sure you've got the [requirements](#requirements) installed first.
 
-```bash
+Using [yarn](https://yarnpkg.com/):
+
+```sh
+yarn add jpeg-turbo
+```
+
+Using [npm](https://www.npmjs.com/):
+
+```sh
 npm install --save jpeg-turbo
 ```
 
