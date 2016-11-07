@@ -1,9 +1,4 @@
-var path = require('path')
-
-var binary = require('node-pre-gyp')
-
-var binding = require(binary.find(
-  path.resolve(path.join(__dirname, './package.json'))))
+var binding = require('bindings')('jpegturbo.node')
 
 // Copy exports so that we can customize them on the JS side without
 // overwriting the binding itself.
