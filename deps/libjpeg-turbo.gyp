@@ -97,7 +97,7 @@
         ],
       },
       'defines': [
-        'BUILD="8f1c0a681cd34e8e80ba7b06f356d6080a7172c9"',
+        'BUILD="b4922b42e7fee72746caed5a63f67ab9615f9e24"',
         'C_ARITH_CODING_SUPPORTED=1',
         'D_ARITH_CODING_SUPPORTED=1',
         'BITS_IN_JSAMPLE=8',
