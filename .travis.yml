@@ -33,3 +33,6 @@ before_install:
 install:
   - npm install
   - npm run prebuilt-bindings -- clean build pack
+
+script:
+  - echo "Build finished!"
