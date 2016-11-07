@@ -16,21 +16,10 @@
   "dependencies": {
     "bindings": "^1.2.1",
     "nan": "^2.3.3",
-    "node-pre-gyp": "^0.6.28"
-  },
-  "bundledDependencies": [
-    "node-pre-gyp"
-  ],
-  "devDependencies": {
-    "aws-sdk": "^2.3.11"
+    "prebuilt-bindings": "^1.0.2"
   },
   "scripts": {
-    "install": "node-pre-gyp install --fallback-to-build"
-  },
-  "binary": {
-    "module_name": "jpegturbo",
-    "module_path": "./lib/binding/{node_abi}-{platform}-{arch}",
-    "host": "https://pre-gyp.s3.amazonaws.com",
-    "remote_path": "./{module_name}/v{version}"
+    "install": "node ./prebuilt-bindings install",
+    "prebuilt-bindings": "node ./prebuilt-bindings"
   }
 }
