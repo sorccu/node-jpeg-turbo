@@ -16,10 +16,8 @@
   "dependencies": {
     "bindings": "^1.2.1",
     "nan": "^2.4.0",
-    "prebuilt-bindings": "^1.0.2"
+    "node-gyp": "^3.6.0"
   },
   "scripts": {
-    "install": "node ./prebuilt-bindings install",
-    "prebuilt-bindings": "node ./prebuilt-bindings"
   }
 }
