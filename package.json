@@ -16,7 +16,7 @@
   "dependencies": {
     "bindings": "^1.2.1",
     "nan": "^2.4.0",
-    "prebuilt-bindings": "^1.0.2"
+    "prebuilt-bindings": "^1.0.3"
   },
   "scripts": {
     "install": "node ./prebuilt-bindings install",
