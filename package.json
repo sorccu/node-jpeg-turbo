@@ -15,9 +15,12 @@
   "main": "./index",
   "dependencies": {
     "bindings": "^1.2.1",
-    "nan": "^2.4.0",
-    "node-gyp": "^3.6.0"
+    "nan": "^2.4.0"
+  },
+  "devDependencies": {
+    "node-gyp": "^3.6.2"
   },
   "scripts": {
+    "install":"git submodule init && git submodule update && node-gyp configure && node-gyp build"
   }
 }
