@@ -17,5 +17,3 @@ node_js:
   - v8
 before_install:
   - export ASM_NASM=$(which yasm)
-script:
-  - echo "Build finished!"

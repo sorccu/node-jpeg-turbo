@@ -7,7 +7,7 @@ environment:
     - nodejs_version: 'Current'
 install:
   - ps: Install-Product node $env:nodejs_version $env:Platform
-  - node --version && npm --version
+  - node --version && npm --version && yarn --version
   - ps: iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-http-proxy.ps1'))
   - IF DEFINED APPVEYOR_HTTP_PROXY_IP npm config set proxy http://%APPVEYOR_HTTP_PROXY_IP%:%APPVEYOR_HTTP_PROXY_PORT%
   - IF DEFINED APPVEYOR_HTTP_PROXY_IP npm config set https-proxy
@@ -23,4 +23,7 @@ install:
   - if "%PLATFORM%" == "x86" npm config set python C:\Python27\python.exe
   - yarn
 build: 'off'
+test_script:
+  - node --version && npm --version && yarn --version
+  - yarn test
 clone_depth: 1
