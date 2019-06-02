@@ -27,7 +27,10 @@ export interface EncodeOptions {
 }
 
 export function bufferSize(options: EncodeOptions): number
-export function compressSync(raw: Buffer, preallocatedOut: Buffer | undefined, options: EncodeOptions): Buffer
+export function compressSync(raw: Buffer, options: EncodeOptions): Buffer
+export function compressSync(raw: Buffer, preallocatedOut: Buffer, options: EncodeOptions): Buffer
+export function compress(raw: Buffer, options: EncodeOptions, callback: (err: any, image: Buffer) => void): void
+export function compress(raw: Buffer, preallocatedOut: Buffer, options: EncodeOptions, callback: (err: any, image: Buffer) => void): void
 
 export interface DecodeOptions {
   format: Format
