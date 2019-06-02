@@ -279,8 +279,8 @@ void compressParse(const Nan::FunctionCallbackInfo<Value>& info, bool async) {
   qualityObject = options->Get(New("quality").ToLocalChecked());
   if (!qualityObject->IsUndefined())
   {
-    tmpMaybe = Nan::To<uint32_t>(strideObject);
-    if (tmpMaybe.IsNothing() || tmpMaybe.FromJust() > 100)
+    tmpMaybe = Nan::To<uint32_t>(qualityObject);
+    if (tmpMaybe.IsNothing() || tmpMaybe.FromJust() > 100u)
     {
       _throw("Invalid quality value");
     }
