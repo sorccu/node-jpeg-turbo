@@ -12,4 +12,6 @@
 /.gitmodules
 /.jshintrc
 /.travis.yml
-/appveyor.json
+/appveyor.yml
+/prebuilds
+/.vscode
