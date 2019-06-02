@@ -22,9 +22,11 @@
   },
   "scripts": {
     "install": "prebuild-install || cmake-js compile --target jpegturbo",
-    "prebuild": "prebuild --all --verbose --backend cmake-js -- --target jpegturbo"
+    "prebuild": "prebuild --all --verbose --backend cmake-js -- --target jpegturbo",
+    "test": "jest"
   },
   "devDependencies": {
+    "jest": "^24.8.0",
     "prebuild": "^8.2.1"
   }
 }
