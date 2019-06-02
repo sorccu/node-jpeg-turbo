@@ -5,7 +5,7 @@ os:
   - osx
 
 sudo: false
-
+dist: xenial
 addons:
   apt:
     sources:

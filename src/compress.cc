@@ -190,6 +190,7 @@ void compressParse(const Nan::FunctionCallbackInfo<Value>& info, bool async) {
   uint32_t stride;
   Local<Value> qualityObject;
   int quality = NJT_DEFAULT_QUALITY;
+  Nan::Maybe<uint32_t> tmpMaybe = Nan::Nothing<uint32_t>();
 
   // Output
   unsigned long jpegSize = 0;
@@ -236,47 +237,60 @@ void compressParse(const Nan::FunctionCallbackInfo<Value>& info, bool async) {
   if (formatObject->IsUndefined()) {
     _throw("Missing format");
   }
-  if (!formatObject->IsUint32()) {
+  tmpMaybe = Nan::To<uint32_t>(formatObject);
+  if (tmpMaybe.IsNothing())
+  {
     _throw("Invalid input format");
   }
-  format = formatObject->Uint32Value();
+  format = tmpMaybe.FromJust();
 
   // Subsampling
   sampObject = options->Get(New("subsampling").ToLocalChecked());
-  if (!sampObject->IsUndefined()) {
-    if (!sampObject->IsUint32()) {
+  if (!sampObject->IsUndefined())
+  {
+    tmpMaybe = Nan::To<uint32_t>(sampObject);
+    if (tmpMaybe.IsNothing())
+    {
       _throw("Invalid subsampling method");
     }
-    jpegSubsamp = sampObject->Uint32Value();
+    jpegSubsamp = tmpMaybe.FromJust();
   }
 
   // Width
   widthObject = options->Get(New("width").ToLocalChecked());
-  if (widthObject->IsUndefined()) {
+  if (widthObject->IsUndefined())
+  {
     _throw("Missing width");
   }
-  if (!widthObject->IsUint32()) {
+  tmpMaybe = Nan::To<uint32_t>(widthObject);
+  if (tmpMaybe.IsNothing())
+  {
     _throw("Invalid width value");
   }
-  width = widthObject->Uint32Value();
+  width = tmpMaybe.FromJust();
 
   // Height
   heightObject = options->Get(New("height").ToLocalChecked());
   if (heightObject->IsUndefined()) {
     _throw("Missing height");
   }
-  if (!heightObject->IsUint32()) {
+  tmpMaybe = Nan::To<uint32_t>(heightObject);
+  if (tmpMaybe.IsNothing())
+  {
     _throw("Invalid height value");
   }
-  height = heightObject->Uint32Value();
+  height = tmpMaybe.FromJust();
 
   // Stride
   strideObject = options->Get(New("stride").ToLocalChecked());
-  if (!strideObject->IsUndefined()) {
-    if (!strideObject->IsUint32()) {
+  if (!strideObject->IsUndefined())
+  {
+    tmpMaybe = Nan::To<uint32_t>(strideObject);
+    if (tmpMaybe.IsNothing())
+    {
       _throw("Invalid stride value");
     }
-    stride = strideObject->Uint32Value();
+    stride = tmpMaybe.FromJust();
   }
   else {
     stride = width;
@@ -284,11 +298,14 @@ void compressParse(const Nan::FunctionCallbackInfo<Value>& info, bool async) {
 
   // Quality
   qualityObject = options->Get(New("quality").ToLocalChecked());
-  if (!qualityObject->IsUndefined()) {
-    if (!qualityObject->IsUint32() || qualityObject->Uint32Value() > 100) {
+  if (!qualityObject->IsUndefined())
+  {
+    tmpMaybe = Nan::To<uint32_t>(strideObject);
+    if (tmpMaybe.IsNothing() || tmpMaybe.FromJust() > 100)
+    {
       _throw("Invalid quality value");
     }
-    quality = qualityObject->Uint32Value();
+    quality = tmpMaybe.FromJust();
   }
 
   // Do either async or sync compress
@@ -347,4 +364,3 @@ NAN_METHOD(CompressSync) {
 NAN_METHOD(Compress) {
   compressParse(info, true);
 }
-
