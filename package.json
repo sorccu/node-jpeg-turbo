@@ -1,6 +1,6 @@
 {
-  "name": "jpeg-turbo",
-  "version": "0.4.0",
+  "name": "@julusian/jpeg-turbo",
+  "version": "0.0.2",
   "description": "Limited libjpeg-turbo bindings for Node.js.",
   "keywords": [
     "jpeg",
@@ -10,16 +10,21 @@
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/sorccu/node-jpeg-turbo.git"
+    "url": "https://github.com/julusian/node-jpeg-turbo.git"
   },
   "main": "./index",
   "dependencies": {
-    "bindings": "^1.2.1",
-    "nan": "^2.4.0",
-    "prebuilt-bindings": "^1.0.3"
+    "bindings": "^1.5.0",
+    "cmake-js": "^5.2.0",
+    "nan": "^2.14.0",
+    "prebuild-install": "^5.3.0"
   },
   "scripts": {
-    "install": "node ./prebuilt-bindings install",
-    "prebuilt-bindings": "node ./prebuilt-bindings"
+    "install": "prebuild-install || cmake-js compile --target jpegturbo",
+    "prebuild": "prebuild --all --verbose --backend cmake-js -- --target jpegturbo",
+    "prebuild-upload": "prebuild --upload-all --backend cmake-js -- --target jpegturbo"
+  },
+  "devDependencies": {
+    "prebuild": "^8.2.1"
   }
 }
