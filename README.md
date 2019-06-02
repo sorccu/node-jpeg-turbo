@@ -8,9 +8,9 @@ Please ask if you need more methods exposed.
 
 ## Requirements
 
-Only the most recent version of Node still in [*active* Long-term Support](https://github.com/nodejs/LTS#lts-schedule) (currently v4) and greater are supported. Older versions may or may not work; they are not and will not be supported.
+Only the most recent version of Node still in [*active* Long-term Support](https://github.com/nodejs/LTS#lts-schedule) and greater are supported. Older versions may or may not work; they are not and will not be supported.
 
-We provide prebuilt bindings for some platforms using [prebuilt-bindings](https://github.com/sorccu/node-prebuilt-bindings), meaning that you should not have to compile native bindings from source very often. The bindings are hosted at and automatically installed from our [GitHub Releases](https://github.com/sorccu/node-jpeg-turbo).
+We provide prebuilds for some platforms, meaning that you should not have to compile native bindings from source very often. The bindings are hosted at and automatically installed from our [GitHub Releases](https://github.com/sorccu/node-jpeg-turbo).
 
 ### If you must build from source
 
@@ -23,56 +23,28 @@ git submodule update
 
 (or just use `git clone --recursive` when cloning the repo)
 
-Due to massive linking pain on Ubuntu, we embed and build `libjpeg-turbo` directly with `node-gyp`. Unfortunately this adds an extra requirement, as the build process needs `yasm` to enable all optimizations. Note that this step is only required for `x86` and `x86_64` architectures. You don't need `yasm` if you're building on `arm`, for example.
+We build `libjpeg-turbo` directly with `cmake`, so both `cmake` and `yasm` are required on your machine. `yasm` is only required on x86 and x86_64 architectures.
 
-Here's how to install `yasm`:
+To install:
 
 **On OS X**
 
 ```bash
 brew install yasm
+brew install cmake
 ```
 
-**On Ubuntu 14.04**
+**On Ubuntu/Debian**
 
 ```bash
-apt-get install yasm
-```
-
-**On Ubuntu 12.04**
-
-```bash
-apt-get install yasm
-```
-
-**Important!** Ubuntu 12.04 comes with GCC 4.6, which is too old to compile the add-on (and most other modules since Node.js 4.0 was released). More information is available [here](https://github.com/travis-ci/travis-ci/issues/1379).
-
-If you really must use this module on Ubuntu 12.04, the following may work:
-
-```bash
-apt-get install python-software-properties
-add-apt-repository -y ppa:ubuntu-toolchain-r/test
-apt-get -y install g++-4.8
-export CXX=g++-4.8
-```
-
-Remember to export `CXX` when you `npm install`.
-
-**On Debian**
-
-```bash
-apt-get install yasm
-```
-
-**On Alpine Linux**
-
-```bash
-apk add yasm
+apt-get install yasm cmake
 ```
 
 **On Windows**
 
-Download Win32 or Win64 yasm from [here](http://yasm.tortall.net/Download.html) and make sure it's found in path as yasm.exe. Use the "for general use" version. If the .exe doesn't run, or complains about a missing `MSVCR100.dll`, go to [KB2977003](https://support.microsoft.com/en-us/kb/2977003) and find "Microsoft Visual C++ 2010 Service Pack 1 Redistributable Package MFC Security Update" under "Visual Studio 2010 (VC++ 10.0) SP1". The .exe should work fine after installing the redistributable.
+Download and install the latest from [here](https://cmake.org/download/). Make sure to select the option to put it on path for all users.
+
+Download Win32 or Win64 yasm from [here](http://yasm.tortall.net/Download.html) and make sure it's found in path as yasm.exe. Use the "for general use" version. If the .exe doesn't run, or complains about a missing `MSVCR100.dll`, you can install the missing VS2010 Redist x64 from [KB2977003](https://www.microsoft.com/en-gb/download/details.aspx?id=14632). The .exe should work fine after installing the redistributable.
 
 To verify your yasm setup, run:
 
