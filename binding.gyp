@@ -1,26 +1,2 @@
-{
-  'targets': [
-    {
-      'target_name': 'jpegturbo',
-      'dependencies': [
-        'deps/libjpeg-turbo.gyp:jpeg-turbo'
-      ],
-      'sources': [
-        'src/buffersize.cc',
-        'src/compress.cc',
-        'src/decompress.cc',
-        'src/exports.cc',
-      ],
-      'include_dirs': [
-        '<!(node -e "require(\'nan\')")'
-      ],
-      'conditions': [
-        ['OS=="mac"', {
-          'xcode_settings': {
-            'MACOSX_DEPLOYMENT_TARGET': '10.9'
-          }
-        }]
-      ]
-    }
-  ]
-}
+# Hack to force electron-builder to realise this is a native dependency
+# https://github.com/electron-userland/electron-builder/issues/3938

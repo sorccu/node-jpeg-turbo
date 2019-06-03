@@ -10,37 +10,14 @@ void compressBufferFreeCallback(char *data, void *hint) {
   tjFree((unsigned char*) data);
 }
 
-int compress(unsigned char* srcData, uint32_t format, uint32_t width, uint32_t stride, uint32_t height, uint32_t jpegSubsamp, int quality, unsigned long* jpegSize, unsigned char** dstData, uint32_t dstBufferLength) {
+int compress(unsigned char* srcData, uint32_t format, uint32_t width, uint32_t stride, uint32_t height, uint32_t jpegSubsamp, int quality, int bpp, unsigned long* jpegSize, unsigned char** dstData, uint32_t dstBufferLength) {
   int retval = 0;
   int err;
 
   tjhandle handle = NULL;
   int flags = TJFLAG_FASTDCT;
-  int bpp = 0;
   uint32_t dstLength = 0;
 
-  // Figure out bpp from format (needed to calculate output buffer size)
-  switch (format) {
-    case FORMAT_GRAY:
-      bpp = 1;
-      break;
-    case FORMAT_RGB:
-    case FORMAT_BGR:
-      bpp = 3;
-      break;
-    case FORMAT_RGBX:
-    case FORMAT_BGRX:
-    case FORMAT_XRGB:
-    case FORMAT_XBGR:
-    case FORMAT_RGBA:
-    case FORMAT_BGRA:
-    case FORMAT_ABGR:
-    case FORMAT_ARGB:
-      bpp = 4;
-      break;
-    default:
-      _throw("Invalid input format");
-  }
 
   switch (jpegSubsamp) {
     case SAMP_444:
@@ -82,10 +59,6 @@ int compress(unsigned char* srcData, uint32_t format, uint32_t width, uint32_t s
     if (err != 0 && retval == 0) {
       snprintf(errStr, NJT_MSG_LENGTH_MAX, "%s", tjGetErrorStr());
     }
-
-    if (dstBufferLength > 0 && dstData != NULL) {
-      tjFree(*dstData);
-    }
   }
 
   return retval;
@@ -93,7 +66,7 @@ int compress(unsigned char* srcData, uint32_t format, uint32_t width, uint32_t s
 
 class CompressWorker : public AsyncWorker {
   public:
-    CompressWorker(Callback *callback, unsigned char* srcData, uint32_t format, uint32_t width, uint32_t stride, uint32_t height, uint32_t jpegSubsamp, int quality, Local<Object> &dstObject, unsigned char* dstData, uint32_t dstBufferLength) :
+    CompressWorker(Callback *callback, unsigned char* srcData, uint32_t format, uint32_t width, uint32_t stride, uint32_t height, uint32_t jpegSubsamp, int quality, int bpp, Local<Object> &dstObject, unsigned char* dstData, uint32_t dstBufferLength) :
       AsyncWorker(callback),
       srcData(srcData),
       format(format),
@@ -102,6 +75,7 @@ class CompressWorker : public AsyncWorker {
       height(height),
       jpegSubsamp(jpegSubsamp),
       quality(quality),
+      bpp(bpp),
       jpegSize(0),
       dstData(dstData),
       dstBufferLength(dstBufferLength) {
@@ -122,6 +96,7 @@ class CompressWorker : public AsyncWorker {
           this->height,
           this->jpegSubsamp,
           this->quality,
+          this->bpp,
           &this->jpegSize,
           &this->dstData,
           this->dstBufferLength);
@@ -161,6 +136,7 @@ class CompressWorker : public AsyncWorker {
     uint32_t height;
     uint32_t jpegSubsamp;
     int quality;
+    int bpp;
     unsigned long jpegSize;
     unsigned char* dstData;
     uint32_t dstBufferLength;
@@ -173,6 +149,7 @@ void compressParse(const Nan::FunctionCallbackInfo<Value>& info, bool async) {
   // Input
   Callback *callback = NULL;
   Local<Object> srcObject;
+  uint32_t srcBufferLength = 0;
   unsigned char* srcData = NULL;
   Local<Object> dstObject;
   uint32_t dstBufferLength = 0;
@@ -190,6 +167,8 @@ void compressParse(const Nan::FunctionCallbackInfo<Value>& info, bool async) {
   uint32_t stride;
   Local<Value> qualityObject;
   int quality = NJT_DEFAULT_QUALITY;
+  int bpp = 0;
+  Nan::Maybe<uint32_t> tmpMaybe = Nan::Nothing<uint32_t>();
 
   // Output
   unsigned long jpegSize = 0;
@@ -213,6 +192,7 @@ void compressParse(const Nan::FunctionCallbackInfo<Value>& info, bool async) {
   if (!Buffer::HasInstance(srcObject)) {
     _throw("Invalid source buffer");
   }
+  srcBufferLength = Buffer::Length(srcObject);
   srcData = (unsigned char*) Buffer::Data(srcObject);
 
   // Options
@@ -236,47 +216,60 @@ void compressParse(const Nan::FunctionCallbackInfo<Value>& info, bool async) {
   if (formatObject->IsUndefined()) {
     _throw("Missing format");
   }
-  if (!formatObject->IsUint32()) {
+  tmpMaybe = Nan::To<uint32_t>(formatObject);
+  if (tmpMaybe.IsNothing())
+  {
     _throw("Invalid input format");
   }
-  format = formatObject->Uint32Value();
+  format = tmpMaybe.FromJust();
 
   // Subsampling
   sampObject = options->Get(New("subsampling").ToLocalChecked());
-  if (!sampObject->IsUndefined()) {
-    if (!sampObject->IsUint32()) {
+  if (!sampObject->IsUndefined())
+  {
+    tmpMaybe = Nan::To<uint32_t>(sampObject);
+    if (tmpMaybe.IsNothing())
+    {
       _throw("Invalid subsampling method");
     }
-    jpegSubsamp = sampObject->Uint32Value();
+    jpegSubsamp = tmpMaybe.FromJust();
   }
 
   // Width
   widthObject = options->Get(New("width").ToLocalChecked());
-  if (widthObject->IsUndefined()) {
+  if (widthObject->IsUndefined())
+  {
     _throw("Missing width");
   }
-  if (!widthObject->IsUint32()) {
+  tmpMaybe = Nan::To<uint32_t>(widthObject);
+  if (tmpMaybe.IsNothing())
+  {
     _throw("Invalid width value");
   }
-  width = widthObject->Uint32Value();
+  width = tmpMaybe.FromJust();
 
   // Height
   heightObject = options->Get(New("height").ToLocalChecked());
   if (heightObject->IsUndefined()) {
     _throw("Missing height");
   }
-  if (!heightObject->IsUint32()) {
+  tmpMaybe = Nan::To<uint32_t>(heightObject);
+  if (tmpMaybe.IsNothing())
+  {
     _throw("Invalid height value");
   }
-  height = heightObject->Uint32Value();
+  height = tmpMaybe.FromJust();
 
   // Stride
   strideObject = options->Get(New("stride").ToLocalChecked());
-  if (!strideObject->IsUndefined()) {
-    if (!strideObject->IsUint32()) {
+  if (!strideObject->IsUndefined())
+  {
+    tmpMaybe = Nan::To<uint32_t>(strideObject);
+    if (tmpMaybe.IsNothing())
+    {
       _throw("Invalid stride value");
     }
-    stride = strideObject->Uint32Value();
+    stride = tmpMaybe.FromJust();
   }
   else {
     stride = width;
@@ -284,16 +277,46 @@ void compressParse(const Nan::FunctionCallbackInfo<Value>& info, bool async) {
 
   // Quality
   qualityObject = options->Get(New("quality").ToLocalChecked());
-  if (!qualityObject->IsUndefined()) {
-    if (!qualityObject->IsUint32() || qualityObject->Uint32Value() > 100) {
+  if (!qualityObject->IsUndefined())
+  {
+    tmpMaybe = Nan::To<uint32_t>(qualityObject);
+    if (tmpMaybe.IsNothing() || tmpMaybe.FromJust() > 100u)
+    {
       _throw("Invalid quality value");
     }
-    quality = qualityObject->Uint32Value();
+    quality = tmpMaybe.FromJust();
+  }
+
+  // Figure out bpp from format (needed to calculate output buffer size)
+  switch (format) {
+    case FORMAT_GRAY:
+      bpp = 1;
+      break;
+    case FORMAT_RGB:
+    case FORMAT_BGR:
+      bpp = 3;
+      break;
+    case FORMAT_RGBX:
+    case FORMAT_BGRX:
+    case FORMAT_XRGB:
+    case FORMAT_XBGR:
+    case FORMAT_RGBA:
+    case FORMAT_BGRA:
+    case FORMAT_ABGR:
+    case FORMAT_ARGB:
+      bpp = 4;
+      break;
+    default:
+      _throw("Invalid input format");
+  }
+
+  if (srcBufferLength < stride * height * bpp) {
+    _throw("Source data is not long enough");
   }
 
   // Do either async or sync compress
   if (async) {
-    AsyncQueueWorker(new CompressWorker(callback, srcData, format, width, stride, height, jpegSubsamp, quality, dstObject, dstData, dstBufferLength));
+    AsyncQueueWorker(new CompressWorker(callback, srcData, format, width, stride, height, jpegSubsamp, quality, bpp, dstObject, dstData, dstBufferLength));
     return;
   }
   else {
@@ -305,6 +328,7 @@ void compressParse(const Nan::FunctionCallbackInfo<Value>& info, bool async) {
         height,
         jpegSubsamp,
         quality,
+        bpp,
         &jpegSize,
         &dstData,
         dstBufferLength);

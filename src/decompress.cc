@@ -164,6 +164,7 @@ void decompressParse(const Nan::FunctionCallbackInfo<Value>& info, bool async) {
   Local<Object> options;
   Local<Value> formatObject;
   uint32_t format = NJT_DEFAULT_FORMAT;
+  Nan::Maybe<uint32_t> tmpMaybe = Nan::Nothing<uint32_t>();
 
   // Output
   Local<Object> dstObject;
@@ -212,11 +213,14 @@ void decompressParse(const Nan::FunctionCallbackInfo<Value>& info, bool async) {
   if (options->IsObject()) {
     // Format of output buffer
     formatObject = options->Get(New("format").ToLocalChecked());
-    if (!formatObject->IsUndefined()) {
-      if (!formatObject->IsUint32()) {
+    if (!formatObject->IsUndefined())
+    {
+      tmpMaybe = Nan::To<uint32_t>(formatObject);
+      if (tmpMaybe.IsNothing())
+      {
         _throw("Invalid format");
       }
-      format = formatObject->Uint32Value();
+      format = tmpMaybe.FromJust();
     }
   }
 

@@ -18,6 +18,7 @@ NAN_METHOD(BufferSize) {
   Local<Value> heightObject;
   uint32_t height = 0;
   uint32_t dstLength = 0;
+  Nan::Maybe<uint32_t> tmpMaybe = Nan::Nothing<uint32_t>();
 
   // Try to find callback here, so if we want to throw something we can use callback's err
   if (info[info.Length() - 1]->IsFunction()) {
@@ -36,11 +37,14 @@ NAN_METHOD(BufferSize) {
 
   // Subsampling
   sampObject = options->Get(New("subsampling").ToLocalChecked());
-  if (!sampObject->IsUndefined()) {
-    if (!sampObject->IsUint32()) {
+  if (!sampObject->IsUndefined())
+  {
+    tmpMaybe = Nan::To<uint32_t>(sampObject);
+    if (tmpMaybe.IsNothing())
+    {
       _throw("Invalid subsampling method");
     }
-    jpegSubsamp = sampObject->Uint32Value();
+    jpegSubsamp = tmpMaybe.FromJust();
   }
 
   switch (jpegSubsamp) {
@@ -59,20 +63,24 @@ NAN_METHOD(BufferSize) {
   if (widthObject->IsUndefined()) {
     _throw("Missing width");
   }
-  if (!widthObject->IsUint32()) {
+  tmpMaybe = Nan::To<uint32_t>(widthObject);
+  if (tmpMaybe.IsNothing())
+  {
     _throw("Invalid width value");
   }
-  width = widthObject->Uint32Value();
+  width = tmpMaybe.FromJust();
 
   // Height
   heightObject = options->Get(New("height").ToLocalChecked());
   if (heightObject->IsUndefined()) {
     _throw("Missing height");
   }
-  if (!heightObject->IsUint32()) {
+  tmpMaybe = Nan::To<uint32_t>(heightObject);
+  if (tmpMaybe.IsNothing())
+  {
     _throw("Invalid height value");
   }
-  height = heightObject->Uint32Value();
+  height = tmpMaybe.FromJust();
 
   // Finally, calculate the buffer size
   dstLength = tjBufSize(width, height, jpegSubsamp);

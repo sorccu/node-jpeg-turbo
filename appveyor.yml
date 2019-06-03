@@ -1,19 +1,17 @@
 platform:
-  - x86
   - x64
 environment:
   matrix:
-    - nodejs_version: '4'
-    - nodejs_version: '5'
-    - nodejs_version: '6'
-    - nodejs_version: '7'
+    - nodejs_version: '8.15.1'
+    - nodejs_version: '10.15.3'
+    - nodejs_version: 'Current'
 install:
   - ps: Install-Product node $env:nodejs_version $env:Platform
-  - node --version && npm --version
+  - node --version && npm --version && yarn --version
   - ps: iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-http-proxy.ps1'))
   - IF DEFINED APPVEYOR_HTTP_PROXY_IP npm config set proxy http://%APPVEYOR_HTTP_PROXY_IP%:%APPVEYOR_HTTP_PROXY_PORT%
   - IF DEFINED APPVEYOR_HTTP_PROXY_IP npm config set https-proxy
-  - npm config set -g msvs_version 2015
+  - npm config set -g msvs_version 2017
   - mkdir c:\yasm
   - set PATH=%APPDATA%\npm;c:\yasm;%PATH%
   - set CI=true
@@ -23,11 +21,9 @@ install:
   - git submodule update --init
   - if "%PLATFORM%" == "x64" npm config set python C:\Python27-x64\python.exe
   - if "%PLATFORM%" == "x86" npm config set python C:\Python27\python.exe
-  - if "%PLATFORM%" == "x86" if "%NODEJS_VERSION%" == "4" npm config set -g cafile=package.json
-  - if "%PLATFORM%" == "x86" if "%NODEJS_VERSION%" == "4" npm config set -g strict-ssl=false
-  - npm install
-  - npm run prebuilt-bindings -- clean build pack
-matrix:
-  fast_finish: true
-build: off
+  - yarn
+build: 'off'
+test_script:
+  - node --version && npm --version && yarn --version
+  - yarn test
 clone_depth: 1
